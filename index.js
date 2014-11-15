@@ -16,6 +16,7 @@ function LoaderIO (apikey) {
   };
   this.apps = makeAppsApis(this);
   this.tests = makeTestsApis(this);
+  this.results = makeResultsApis(this);
   this.servers = makeServersApis(this);
 }
 
@@ -97,7 +98,7 @@ function makeAppsApis (context) {
     create: function (app, callback) {
       context.post('/v2/apps', {app: app}, callback);
     },
-    select: function (id, callback) {
+    get: function (id, callback) {
       context.get('/v2/apps/' + id, callback);
     },
     verify: function (method, callback) {
@@ -151,19 +152,21 @@ function makeTestsApis (context) {
 
 function makeResultsApis (context) {
   return {
-    list: function (callback) {
-      context.get('/v2/tests/' + context.id + '/results', callback);
+    list: function (testId, callback) {
+      context.get('/v2/tests/' + testId + '/results', callback);
     },
-    get: function (id, callback) {
-      context.get('/v2/tests/' + context.id + '/results/' + id, callback);
+    get: function (testId, resultId, callback) {
+      context.get('/v2/tests/' + testId + '/results/' + resultId, callback);
     }
   };
 }
 
 function stickResultsApis (test, context) {
-  var ctx = Object.create(context);
-  ctx.id = test.test_id;
-  test.results = makeResultsApis(ctx);
+  var self = this;
+  var results = makeResultsApis(context);
+  test.results = Object.keys(results).map(function (key) {
+    return results[key].bind(self, test.test_id);
+  });
   return test;
 }
 
@@ -174,3 +177,6 @@ function makeServersApis (context) {
     }
   };
 }
+
+exports.LoaderIO = LoaderIO;
+
