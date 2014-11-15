@@ -6,7 +6,7 @@ loader.io api wrapper for nodejs
 ### installation
 
 ```sh
-$ npm install --save loaderio
+$ npm install --save loader.io
 ```
 
 ### API

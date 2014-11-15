@@ -1,6 +1,6 @@
 {
-  "name": "loaderio",
-  "version": "1.0.0",
+  "name": "loader.io",
+  "version": "1.0.1",
   "description": "loader.io api wrapper for nodejs",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "url": "git@github.com:yorkie/node-loaderio.git"
   },
   "keywords": [
-    "loader.io"
+    "loader io"
   ],
   "author": "Yorkie Liu <yorkiefixer@gmail.com>",
   "license": "MIT",
@@ -22,5 +22,6 @@
   "dependencies": {
     "event-stream": "^3.1.7",
     "once": "^1.3.1"
-  }
+  },
+  "devDependencies": {}
 }
