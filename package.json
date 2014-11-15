@@ -1,0 +1,22 @@
+{
+  "name": "loaderio",
+  "version": "1.0.0",
+  "description": "loader.io api wrapper for nodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:yorkie/node-loaderio.git"
+  },
+  "keywords": [
+    "loader.io"
+  ],
+  "author": "Yorkie Liu <yorkiefixer@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yorkie/node-loaderio/issues"
+  },
+  "homepage": "https://github.com/yorkie/node-loaderio"
+}
