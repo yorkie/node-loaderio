@@ -15,6 +15,8 @@ function LoaderIO (apikey) {
     'content-type': 'application/json; charset=UTF-8'
   };
   this.apps = makeAppsApis(this);
+  this.tests = makeTestsApis(this);
+  this.servers = makeServersApis(this);
 }
 
 function resolveResp (res, callback) {
@@ -60,6 +62,18 @@ LoaderIO.prototype.del = function (path, callback) {
   }).once('error', callback).end();
 };
 
+LoaderIO.prototype.put = function (path, callback) {
+  var callback = once(callback);
+  https.request({
+    method: 'PUT',
+    hostname: host,
+    path: path,
+    headers: this.headers
+  }, function (res) {
+    resolveResp(res, callback);
+  }).once('error', callback).end();
+};
+
 LoaderIO.prototype.post = function (path, body, callback) {
   var callback = once(callback);
   https.request({
@@ -91,6 +105,72 @@ function makeAppsApis (context) {
     },
     delete: function (id, callback) {
       context.del('/v2/apps/' + id, callback);
+    }
+  };
+}
+
+function makeTestsApis (context) {
+  return {
+    list: function (callback) {
+      var self = this;
+      var runFn = this.run;
+      var stopFn = this.stop;
+      context.get('/v2/tests', function (err, list) {
+        callback(err, (list || []).map(
+          function (item) {
+            item = stickResultsApis(item, context);
+            item.run = runFn.bind(self, item.test_id);
+            item.stop = stopFn.bind(self, item.test_id);
+            return item;
+          }
+        ));
+      });
+    },
+    create: function (test, callback) {
+      context.post('/v2/tests', tests, callback);
+    },
+    get: function (id, callback) {
+      var self = this;
+      var runFn = this.run;
+      var stopFn = this.stop;
+      context.get('/v2/tests/' + id, function (err, item) {
+        var item = stickResultsApis(item, context);
+        item.run = runFn.bind(self, item.test_id);
+        item.stop = stopFn.bind(self, item.test_id);
+        callback(err, stickResultsApis(item, context));
+      });
+    },
+    run: function (id, callback) {
+      context.put('/v2/tests/' + id + '/run', callback);
+    },
+    stop: function (id, callback) {
+      context.put('/v2/tests/' + id + '/stop', callback);
+    }
+  };
+}
+
+function makeResultsApis (context) {
+  return {
+    list: function (callback) {
+      context.get('/v2/tests/' + context.id + '/results', callback);
+    },
+    get: function (id, callback) {
+      context.get('/v2/tests/' + context.id + '/results/' + id, callback);
+    }
+  };
+}
+
+function stickResultsApis (test, context) {
+  var ctx = Object.create(context);
+  ctx.id = test.test_id;
+  test.results = makeResultsApis(ctx);
+  return test;
+}
+
+function makeServersApis (context) {
+  return {
+    list: function (callback) {
+      context.get('/v2/servers', callback);
     }
   };
 }
